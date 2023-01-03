@@ -1,0 +1,342 @@
+import java_cup.runtime.*;
+import java.io.*;
+
+parser code {:
+   public int errNum = 0;
+
+   public static void main(String[] args) {
+      try {
+		   FileReader file = new FileReader(args[0]);
+		   Scanner scanner = new MPLexer(file);
+		   MPParser parser = new MPParser(scanner);
+		   parser.parse();
+         switch (parser.errNum) {
+            case 0: {
+               System.out.println("\nANALYSIS COMPLETE: NO ERRORS FOUND");
+               break;
+            }
+
+            case 1: {
+               System.out.println("\nANALYSIS COMPLETE: " + parser.errNum + " ERROR FOUND");
+               break;
+            }
+
+            default: {
+               System.out.println("\nANALYSIS COMPLETE: " + parser.errNum + " ERRORS FOUND");
+               break;
+            }
+         }
+      } catch(Exception e) {
+         System.out.println(e);
+      }
+   }
+
+   public int getLine() {
+   	  return ((MPLexer) getScanner()).getLine();
+   }
+:};
+
+terminal STRESSIN, VIBIN, MF, DIPPIN, LACKIN;
+terminal AND, OR, LESSTHAN, LESSEQUAL, TBH, CAPPIN, MORETHAN, MOREEQUAL;
+terminal SUSSIN, BUSSIN;
+terminal RN, COMMA, BE, SKRR, SKRRT, HIGHKEY, LOWKEY;
+terminal CHIEF, FR, RACK, BAG, DO, WHILE, POPPIN;
+terminal ID, CONST;
+
+non terminal Program, Block, VarList, StatementList, VarDecl, NameList, Type;
+non terminal Statement, Expression, AndExpression, RelExpression, ArExpression, RelOp;
+non terminal Term, Factor;
+
+Program ::=
+   CHIEF SKRR SKRRT Block
+      {:
+         System.out.println("SHIFT REDUCTION 1");
+      :}
+   | CHIEF SKRR SKRRT error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING BLOCK");
+         parser.errNum++;
+      :}
+   | CHIEF SKRR error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING CHIEF SKRRT");
+         parser.errNum++;
+      :}
+   | CHIEF error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING CHIEF SKRR");
+         parser.errNum++;
+      :}
+   | error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING CHIEF");
+         parser.errNum++;
+      :}
+;
+
+Block ::=
+   HIGHKEY VarList StatementList LOWKEY
+      {:
+         System.out.println("SHIFT REDUCTION 2");
+      :}
+;
+
+VarList ::=
+   VarList VarDecl
+      {:
+         System.out.println("SHIFT REDUCTION 3");
+      :}
+   | VarDecl
+      {:
+         System.out.println("SHIFT REDUCTION 4");
+      :}
+;
+
+VarDecl ::=
+   Type NameList RN
+      {:
+         System.out.println("SHIFT REDUCTION 5");
+      :}
+   | Type Type NameList RN
+      {:
+         System.out.println("SHIFT REDUCTION 6");
+      :}
+   | Type error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING VARDECL COMPONENT");
+         parser.errNum++;
+      :}
+   | Type Type error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING VARDECL COMPONENT");
+         parser.errNum++;
+      :}
+;
+
+NameList ::= 
+   NameList COMMA ID
+      {:
+         System.out.println("SHIFT REDUCTION 7");
+      :}
+   | ID
+      {:
+         System.out.println("SHIFT REDUCTION 8");
+      :}
+;
+
+Type ::=
+   FR
+      {:
+         System.out.println("SHIFT REDUCTION 9");
+      :}
+   | RACK
+      {:
+         System.out.println("SHIFT REDUCTION 10");
+      :}
+   | BAG
+      {:
+         System.out.println("SHIFT REDUCTION 11");
+      :}
+;
+
+StatementList ::=
+   StatementList Statement
+      {:
+         System.out.println("SHIFT REDUCTION 12");
+      :}
+   | Statement
+      {:
+         System.out.println("SHIFT REDUCTION 13");
+      :}
+;
+
+Statement ::=
+   ID BE Expression RN
+      {:
+         System.out.println("SHIFT REDUCTION 14");
+      :}
+   | ID BE Expression error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING ASSIGNMENT COMPONENT");
+         parser.errNum++;
+      :}
+   | ID BE error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING ASSIGNMENT COMPONENT");
+         parser.errNum++;
+      :}
+   | ID error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING ASSIGNMENT COMPONENT");
+         parser.errNum++;
+      :}
+   | POPPIN Term RN
+      {:
+         System.out.println("SHIFT REDUCTION 15");
+      :}
+   | POPPIN Term error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING POPPIN RN");
+         parser.errNum++;
+      :}
+   | POPPIN error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING POPPIN TERM");
+         parser.errNum++;
+      :}
+   | Expression SUSSIN Expression BUSSIN Expression RN
+      {:
+         System.out.println("SHIFT REDUCTION 16");
+      :}
+   | WHILE Expression Statement
+      {:
+         System.out.println("SHIFT REDUCTION 17");
+      :}
+   | WHILE Expression error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING WHILE STATEMENT");
+         parser.errNum++;
+      :}
+   | WHILE error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING WHILE EXPRESSION");
+         parser.errNum++;
+      :}
+   | DO Statement WHILE Expression RN
+      {:
+         System.out.println("SHIFT REDUCTION 18");
+      :}
+   | DO Statement WHILE Expression error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING DO WHILE RN");
+         parser.errNum++;
+      :}
+   | DO Statement WHILE error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING DO WHILE EXPRESSION");
+         parser.errNum++;
+      :}
+   | DO Statement error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING DO WHILE TERMINAL");
+         parser.errNum++;
+      :}
+   | DO error
+      {:
+         System.out.println("\tLINE " + parser.getLine() + ": MISSING DO WHILE STATEMENT");
+         parser.errNum++;
+      :}
+   | Block
+      {:
+         System.out.println("SHIFT REDUCTION 19");
+      :}
+;
+
+RelOp ::=
+   LESSTHAN
+      {:
+         System.out.println("SHIFT REDUCTION 20");
+      :}
+   | LESSEQUAL
+      {:
+         System.out.println("SHIFT REDUCTION 21");
+      :}
+   | TBH
+      {:
+         System.out.println("SHIFT REDUCTION 22");
+      :}
+   | CAPPIN
+      {:
+         System.out.println("SHIFT REDUCTION 23");
+      :}
+   | MORETHAN
+      {:
+         System.out.println("SHIFT REDUCTION 24");
+      :}
+   | MOREEQUAL
+      {:
+         System.out.println("SHIFT REDUCTION 25");
+      :}
+;
+
+Expression ::=
+   Expression OR AndExpression
+      {:
+         System.out.println("SHIFT REDUCTION 26");
+      :}
+   | AndExpression
+      {:
+         System.out.println("SHIFT REDUCTION 27");
+      :}
+;
+
+AndExpression ::=
+   AndExpression AND RelExpression
+      {:
+         System.out.println("SHIFT REDUCTION 28");
+      :}
+   | RelExpression
+      {:
+         System.out.println("SHIFT REDUCTION 29");
+      :}
+;
+
+RelExpression ::=
+   ArExpression RelOp ArExpression
+      {:
+         System.out.println("SHIFT REDUCTION 30");
+      :}
+   | ArExpression
+      {:
+         System.out.println("SHIFT REDUCTION 31");
+      :}
+;
+
+ArExpression ::=
+   ArExpression STRESSIN Term
+      {:
+         System.out.println("SHIFT REDUCTION 32");
+      :}
+   | ArExpression VIBIN Term
+      {:
+         System.out.println("SHIFT REDUCTION 33");
+      :}
+   | Term
+      {:
+         System.out.println("SHIFT REDUCTION 34");
+      :}
+;
+
+Term ::=
+   Term MF Factor
+      {:
+         System.out.println("SHIFT REDUCTION 35");
+      :}
+   | Term DIPPIN Factor
+      {:
+         System.out.println("SHIFT REDUCTION 36");
+      :}
+   | Term LACKIN Factor
+      {:
+         System.out.println("SHIFT REDUCTION 37");
+      :}
+   | Factor
+      {:
+         System.out.println("SHIFT REDUCTION 38");
+      :}
+;
+
+Factor ::=
+   ID
+      {:
+         System.out.println("SHIFT REDUCTION 39");
+      :}
+   | CONST
+      {:
+         System.out.println("SHIFT REDUCTION 40");
+      :}
+   | SKRR Expression SKRRT
+      {:
+         System.out.println("SHIFT REDUCTION 41");
+      :}
+;

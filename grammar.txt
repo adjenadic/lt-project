@@ -1,0 +1,37 @@
+G:
+
+Program → chief skrr skrrt Block
+Block → highkey VarList StatementList lowkey
+VarList → VarList VarDecl | VarDecl
+VarDecl → Type Namelist rn | Type Type NameList rn
+NameList → NameList , ID | ID
+Type → fr | rack | bag
+StatementList → StatementList Statement | Statement
+Statement → ID be Expression rn
+| poppin Term rn
+| Expression sussin Expression bussin Expression rn
+| while Expression Statement
+| do Statement while Expression rn
+| Block
+RelOp → < 
+| <=
+| tbh
+| cappin
+| >
+| >=
+Expression → Expression || AndExpression
+| AndExpression
+AndExpression → AndExpression && RelExpression
+| RelExpression
+RelExpression → ArExpression RelOp ArExpression
+| ArExpression
+ArExpression → ArExpression stressin Term
+| ArExpression vibin Term
+| Term
+Term → Term mf Factor
+| Term dippin Factor
+| Term lackin Factor
+| Factor
+Factor → ID
+| CONST
+| skrr Expression skrrt
